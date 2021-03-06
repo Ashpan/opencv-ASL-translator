@@ -14,8 +14,8 @@ dataLocation = 'D:\\Dataset\\A\\'
 fileName = 'a'
 count = 0
 
-
-model = tensorflow.keras.models.load_model('ABCD_model.h5')
+model = tensorflow.keras.models.load_model('D:\\Dataset\\ABCD_model.h5')
+TM_DATA = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
 
 # --------------------------------------------------
 # To find the running average over the background
