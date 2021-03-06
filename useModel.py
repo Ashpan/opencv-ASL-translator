@@ -2,19 +2,26 @@ import cv2
 import imutils
 import numpy as np
 import tensorflow
+from idLetter import idLetter
+import os
 
 # global variables
 bg = None
 
+# Choose active camers
+camera = 0
+
+fileLocation = os.path.dirname(os.path.realpath(__file__))
+
 model = tensorflow.keras.models.load_model(
-    'C:\\Python36\\DeltaTest\\ABCD_model.h5')
-print(model.summary())
+    fileLocation + '\\keras_model2.h5')
 TM_DATA = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
-f = open('C:\\Python36\\DeltaTest\\ABCD_labels.txt', 'r')
-labels = f.read()
-labels = labels.split()
-print(labels)
-labels = ['A', 'B', 'C', 'D']
+f = open(fileLocation + '\\keras_labels2.txt', 'r')
+labels = f.read().split('\n')[:-1]
+# Fix this
+
+stats = idLetter(labels)
+letter = ''
 
 # --------------------------------------------------
 # To find the running average over the background
@@ -31,9 +38,9 @@ def run_avg(image, aWeight):
     # compute weighted average, accumulate it and update the background
     cv2.accumulateWeighted(image, bg, aWeight)
 
-# ---------------------------------------------
-# To segment the region of hand in the image
-# ---------------------------------------------
+    # ---------------------------------------------
+    # To segment the region of hand in the image
+    # ---------------------------------------------
 
 
 def segment(image, threshold=25):
@@ -65,10 +72,10 @@ if __name__ == "__main__":
     aWeight = 0.5
 
     # get the reference to the webcam
-    camera = cv2.VideoCapture(1)
+    camera = cv2.VideoCapture(camera)
 
     # region of interest (ROI) coordinates
-    top, right, bottom, left = 10, 350, 225, 590
+    top, right, bottom, left = 60, 250, 275, 490
 
     # initialize num of frames
     num_frames = 0
@@ -82,7 +89,7 @@ if __name__ == "__main__":
         frame = cv2.resize(frame, (700, 700))
 
         # flip the frame so that it is not the mirror view
-        # frame = cv2.flip(frame, 1)
+        viewFrame = cv2.flip(frame, 1)
 
         # clone the frame
         clone = frame.copy()
@@ -114,28 +121,40 @@ if __name__ == "__main__":
                 # draw the segmented region and display the frame
                 cv2.drawContours(
                     clone, [segmented + (right, top)], -1, (0, 0, 255))
-                thresholed = cv2.cvtColor(gray, cv2.COLOR_GRAY2RGB)
-                cv2.imshow("Thesholded", thresholded)
+                img2 = np.zeros_like(roi)
+                img2[:, :, 0] = thresholded
+                img2[:, :, 1] = thresholded
+                img2[:, :, 2] = thresholded
+                thresholded = img2
+                cv2.imshow("Thesholded", cv2.flip(thresholded, 1))
 
                 thresholded = cv2.resize(roi, (224, 224))
                 image_array = np.asarray(thresholded)
                 normalized = (image_array.astype(np.float32)/127.0)-1
                 TM_DATA[0] = normalized
                 PredictionVar = model.predict(TM_DATA)
-                print(PredictionVar)
-                print(max(PredictionVar[0]))
-                print(labels[PredictionVar[0].tolist().index(
-                    max(PredictionVar[0]))])
+                # print(PredictionVar)
+                # print(max(PredictionVar[0]))
+                # print(labels[PredictionVar[0].tolist().index(
+                #     max(PredictionVar[0]))])
+                c = stats.addData(labels[PredictionVar[0].tolist().index(
+                    max(PredictionVar[0]))], max(PredictionVar[0]))
+                if c is not None:
+                    letter = c
+                    print(letter[2:])
+
+                # idLetter(max(PredictionVar[0]), labels[PredictionVar[0].tolist().index(
+                #     max(PredictionVar[0]))])
                 #labels[np.where(PredictionVar[0] == max(PredictionVar[0]))]
 
         # draw the segmented hand
-        cv2.rectangle(clone, (left, top), (right, bottom), (0, 255, 0), 2)
+        cv2.rectangle(viewFrame, (left, top), (right, bottom), (0, 255, 0), 2)
 
         # increment the number of frames
         num_frames += 1
 
         # display the frame with segmented hand
-        cv2.imshow("Video Feed", clone)
+        cv2.imshow("Video Feed", viewFrame)
 
         # observe the keypress by the user
         keypress = cv2.waitKey(1) & 0xFF

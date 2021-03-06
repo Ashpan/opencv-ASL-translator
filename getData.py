@@ -4,18 +4,27 @@
 
 # organize imports
 import cv2
+import imutils
 import numpy as np
-import tensorflow
+import os
+
+currLetter = 'T'
 
 # global variables
 bg = None
 record = False
-dataLocation = 'D:\\Dataset\\A\\'
-fileName = 'a'
+dataLocation = 'D:\\DatasetColour\\' + currLetter + '\\'
+try:
+    os.mkdir(dataLocation)
+except:
+    print('Path exists\n')
+fileName = currLetter.lower()
 count = 0
+camera = 0
+sampleSize = 200
 
-model = tensorflow.keras.models.load_model('D:\\Dataset\\ABCD_model.h5')
-TM_DATA = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
+print(dataLocation)
+
 
 # --------------------------------------------------
 # To find the running average over the background
@@ -66,10 +75,10 @@ if __name__ == "__main__":
     aWeight = 0.5
 
     # get the reference to the webcam
-    camera = cv2.VideoCapture(1)
+    camera = cv2.VideoCapture(camera)
 
     # region of interest (ROI) coordinates
-    top, right, bottom, left = 10, 350, 225, 590
+    top, right, bottom, left = 60, 250, 275, 490
 
     # initialize num of frames
     num_frames = 0
@@ -83,7 +92,7 @@ if __name__ == "__main__":
         frame = imutils.resize(frame, width=700)
 
         # flip the frame so that it is not the mirror view
-        #frame = cv2.flip(frame, 1)
+        viewFrame = cv2.flip(frame, 1)
 
         # clone the frame
         clone = frame.copy()
@@ -112,15 +121,12 @@ if __name__ == "__main__":
                 # segmented region
                 (thresholded, segmented) = hand
 
-                # draw the segmented region and display the frame
-                cv2.drawContours(
-                    clone, [segmented + (right, top)], -1, (0, 0, 255))
-                cv2.imshow("Thesholded", thresholded)
+                cv2.imshow("Thesholded", cv2.flip(thresholded, 1))
                 if record:
-                    if count <= 500:
+                    if count < sampleSize:
                         if not thresholded is None:
                             count += 1
-                            outIm = cv2.resize(thresholded, (64, 64))
+                            outIm = cv2.resize(roi, (64, 64))
                             savePath = dataLocation + \
                                 fileName + str(count) + '.png'
                             cv2.imwrite(savePath, outIm)
@@ -129,13 +135,13 @@ if __name__ == "__main__":
                         print("Collection Finished")
 
         # draw the segmented hand
-        cv2.rectangle(clone, (left, top), (right, bottom), (0, 255, 0), 2)
+        cv2.rectangle(viewFrame, (left, top), (right, bottom), (0, 255, 0), 2)
 
         # increment the number of frames
         num_frames += 1
 
         # display the frame with segmented hand
-        cv2.imshow("Video Feed", clone)
+        cv2.imshow("Video Feed", viewFrame)
 
         # observe the keypress by the user
         keypress = cv2.waitKey(1) & 0xFF
