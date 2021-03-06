@@ -6,15 +6,11 @@ import tensorflow
 # global variables
 bg = None
 
+#model = tensorflow.keras.models.load_model( 'C:\\Python36\\DeltaTest\\ABCD_model.h5')
 model = tensorflow.keras.models.load_model(
-    'C:\\Python36\\DeltaTest\\ABCD_model.h5')
+    "C:\\Users\\leewk\\deltasmacks\\gitrepo\\opencv-ASL-translator\\ABCD_model.h5")
 print(model.summary())
 TM_DATA = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
-f = open('C:\\Python36\\DeltaTest\\ABCD_labels.txt', 'r')
-labels = f.read()
-labels = labels.split()
-print(labels)
-labels = ['A', 'B', 'C', 'D']
 
 # --------------------------------------------------
 # To find the running average over the background
@@ -65,7 +61,7 @@ if __name__ == "__main__":
     aWeight = 0.5
 
     # get the reference to the webcam
-    camera = cv2.VideoCapture(1)
+    camera = cv2.VideoCapture(0)
 
     # region of interest (ROI) coordinates
     top, right, bottom, left = 10, 350, 225, 590
@@ -79,10 +75,10 @@ if __name__ == "__main__":
         (grabbed, frame) = camera.read()
 
         # resize the frame
-        frame = cv2.resize(frame, (700, 700))
+        frame = imutils.resize(frame, width=700)
 
         # flip the frame so that it is not the mirror view
-        # frame = cv2.flip(frame, 1)
+        #frame = cv2.flip(frame, 1)
 
         # clone the frame
         clone = frame.copy()
@@ -117,16 +113,13 @@ if __name__ == "__main__":
                 thresholed = cv2.cvtColor(gray, cv2.COLOR_GRAY2RGB)
                 cv2.imshow("Thesholded", thresholded)
 
-                thresholded = cv2.resize(roi, (224, 224))
+                thresholded = cv2.resize(thresholded, (224, 224))
                 image_array = np.asarray(thresholded)
                 normalized = (image_array.astype(np.float32)/127.0)-1
                 TM_DATA[0] = normalized
                 PredictionVar = model.predict(TM_DATA)
+                print('Prediction')
                 print(PredictionVar)
-                print(max(PredictionVar[0]))
-                print(labels[PredictionVar[0].tolist().index(
-                    max(PredictionVar[0]))])
-                #labels[np.where(PredictionVar[0] == max(PredictionVar[0]))]
 
         # draw the segmented hand
         cv2.rectangle(clone, (left, top), (right, bottom), (0, 255, 0), 2)
