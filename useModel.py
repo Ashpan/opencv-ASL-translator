@@ -114,7 +114,7 @@ if __name__ == "__main__":
                 # draw the segmented region and display the frame
                 cv2.drawContours(
                     clone, [segmented + (right, top)], -1, (0, 0, 255))
-
+                thresholed = cv2.cvtColor(gray, cv2.COLOR_GRAY2RGB)
                 cv2.imshow("Thesholded", thresholded)
 
                 thresholded = cv2.resize(roi, (224, 224))
