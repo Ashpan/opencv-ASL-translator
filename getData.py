@@ -4,7 +4,6 @@
 
 # organize imports
 import cv2
-import imutils
 import numpy as np
 import tensorflow
 
@@ -15,7 +14,8 @@ dataLocation = 'D:\\Dataset\\A\\'
 fileName = 'a'
 count = 0
 
-model = tensorflow.keras.models.load_model('D:\\Dataset\\ABCD_model.h5')
+
+model = tensorflow.keras.models.load_model('ABCD_model.h5')
 
 # --------------------------------------------------
 # To find the running average over the background
