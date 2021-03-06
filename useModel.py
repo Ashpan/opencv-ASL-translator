@@ -1,8 +1,3 @@
-# -------------------------------------------
-# SEGMENT HAND REGION FROM A VIDEO SEQUENCE
-# -------------------------------------------
-
-# organize imports
 import cv2
 import imutils
 import numpy as np
@@ -10,13 +5,11 @@ import tensorflow
 
 # global variables
 bg = None
-record = False
-dataLocation = 'D:\\Dataset\\A\\'
-fileName = 'a'
-count = 0
 
-model = tensorflow.keras.models.load_model('D:\\Dataset\\ABCD_model.h5')
-TM_DATA = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
+model = tensorflow.keras.models.load_model(
+    'C:\\Python36\\DeltaTest\\ABCD_model.h5')
+print(model.summary())
+TM_DATA = np.ndarray(shape=(1, 64, 64, 4), dtype=np.float32)
 
 # --------------------------------------------------
 # To find the running average over the background
@@ -117,17 +110,14 @@ if __name__ == "__main__":
                 cv2.drawContours(
                     clone, [segmented + (right, top)], -1, (0, 0, 255))
                 cv2.imshow("Thesholded", thresholded)
-                if record:
-                    if count <= 500:
-                        if not thresholded is None:
-                            count += 1
-                            outIm = cv2.resize(thresholded, (64, 64))
-                            savePath = dataLocation + \
-                                fileName + str(count) + '.png'
-                            cv2.imwrite(savePath, outIm)
-                    else:
-                        record = False
-                        print("Collection Finished")
+
+                thresholded = cv2.resize(thresholded, (64, 64))
+                image_array = np.asarray(thresholded)
+                normalized = (image_array.astype(np.float32)/127.0)-1
+                TM_DATA[0] = normalized
+                PredictionVar = model.predict(TM_DATA)
+                print('Prediction')
+                print(PredictionVar)
 
         # draw the segmented hand
         cv2.rectangle(clone, (left, top), (right, bottom), (0, 255, 0), 2)
@@ -144,14 +134,6 @@ if __name__ == "__main__":
         # if the user pressed "q", then stop looping
         if keypress == ord("q"):
             break
-
-        if keypress == ord("r"):
-            if not record:
-                record = True
-                print('Record Start\n')
-            else:
-                record = False
-                print('Record Stop\n')
 
 
 # free up memory
