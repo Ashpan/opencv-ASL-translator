@@ -9,7 +9,12 @@ bg = None
 model = tensorflow.keras.models.load_model(
     'C:\\Python36\\DeltaTest\\ABCD_model.h5')
 print(model.summary())
-TM_DATA = np.ndarray(shape=(1, 64, 64, 4), dtype=np.float32)
+TM_DATA = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
+f = open('C:\\Python36\\DeltaTest\\ABCD_labels.txt', 'r')
+labels = f.read()
+labels = labels.split()
+print(labels)
+labels = ['A', 'B', 'C', 'D']
 
 # --------------------------------------------------
 # To find the running average over the background
@@ -74,10 +79,10 @@ if __name__ == "__main__":
         (grabbed, frame) = camera.read()
 
         # resize the frame
-        frame = imutils.resize(frame, width=700)
+        frame = cv2.resize(frame, (700, 700))
 
         # flip the frame so that it is not the mirror view
-        #frame = cv2.flip(frame, 1)
+        # frame = cv2.flip(frame, 1)
 
         # clone the frame
         clone = frame.copy()
@@ -109,15 +114,19 @@ if __name__ == "__main__":
                 # draw the segmented region and display the frame
                 cv2.drawContours(
                     clone, [segmented + (right, top)], -1, (0, 0, 255))
+
                 cv2.imshow("Thesholded", thresholded)
 
-                thresholded = cv2.resize(thresholded, (64, 64))
+                thresholded = cv2.resize(roi, (224, 224))
                 image_array = np.asarray(thresholded)
                 normalized = (image_array.astype(np.float32)/127.0)-1
                 TM_DATA[0] = normalized
                 PredictionVar = model.predict(TM_DATA)
-                print('Prediction')
                 print(PredictionVar)
+                print(max(PredictionVar[0]))
+                print(labels[PredictionVar[0].tolist().index(
+                    max(PredictionVar[0]))])
+                #labels[np.where(PredictionVar[0] == max(PredictionVar[0]))]
 
         # draw the segmented hand
         cv2.rectangle(clone, (left, top), (right, bottom), (0, 255, 0), 2)
