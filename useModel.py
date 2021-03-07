@@ -14,14 +14,15 @@ camera = 0
 fileLocation = os.path.dirname(os.path.realpath(__file__))
 
 model = tensorflow.keras.models.load_model(
-    fileLocation + '\\keras_model2.h5')
+    fileLocation + '\\final_model.h5')
 TM_DATA = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
-f = open(fileLocation + '\\keras_labels2.txt', 'r')
+f = open(fileLocation + '\\final_labels.txt', 'r')
 labels = f.read().split('\n')[:-1]
 # Fix this
 
 stats = idLetter(labels)
 letter = ''
+wordEnd = False
 
 # --------------------------------------------------
 # To find the running average over the background
@@ -75,7 +76,7 @@ if __name__ == "__main__":
     camera = cv2.VideoCapture(camera)
 
     # region of interest (ROI) coordinates
-    top, right, bottom, left = 60, 250, 275, 490
+    top, right, bottom, left = 100, 250, 300, 450
 
     # initialize num of frames
     num_frames = 0
@@ -114,6 +115,7 @@ if __name__ == "__main__":
 
             # check whether hand region is segmented
             if hand is not None:
+                wordEnd = False
                 # if yes, unpack the thresholded image and
                 # segmented region
                 (thresholded, segmented) = hand
@@ -146,6 +148,8 @@ if __name__ == "__main__":
                 # idLetter(max(PredictionVar[0]), labels[PredictionVar[0].tolist().index(
                 #     max(PredictionVar[0]))])
                 #labels[np.where(PredictionVar[0] == max(PredictionVar[0]))]
+            else:
+                wordEnd = True
 
         # draw the segmented hand
         cv2.rectangle(viewFrame, (left, top), (right, bottom), (0, 255, 0), 2)

@@ -2,7 +2,9 @@ class idLetter():
 
     sampleCount = 0
     sampleData = {}
-    sampleMax = 10
+    sampleMax = 30
+    sleepCount = 0
+    sleepMax = 5
 
     def __init__(self, labelArray):
         for label in labelArray:
@@ -18,6 +20,8 @@ class idLetter():
             for i in range(len(high)):
                 high[i] = (high[i][0][2:], high[i][1])
             return (high)
+        elif self.sleepCount < self.sleepMax:
+            self.sleepCount += 1
         else:
             self.sampleCount += 1
             self.sampleData[label] += weight

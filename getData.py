@@ -8,12 +8,12 @@ import imutils
 import numpy as np
 import os
 
-currLetter = 'T'
+currLetter = 'NAME'
 
 # global variables
 bg = None
 record = False
-dataLocation = 'D:\\DatasetColour\\' + currLetter + '\\'
+dataLocation = 'D:\\DatasetFinal\\' + currLetter + '\\'
 try:
     os.mkdir(dataLocation)
 except:
@@ -78,7 +78,7 @@ if __name__ == "__main__":
     camera = cv2.VideoCapture(camera)
 
     # region of interest (ROI) coordinates
-    top, right, bottom, left = 60, 250, 275, 490
+    top, right, bottom, left = 100, 250, 300, 450
 
     # initialize num of frames
     num_frames = 0
