@@ -13,7 +13,7 @@ wordEnd = False
 display = ''
 
 # Choose active camera
-camera = 0
+camera = 1
 
 # Locate local file location
 fileLocation = os.path.dirname(os.path.realpath(__file__))
@@ -148,7 +148,7 @@ if __name__ == "__main__":
                 wordEnd = True
                 stats.reset()
         cv2.putText(viewFrame, display, (10, 600),
-                    cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0))
+                    cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0),3)
         # draw the segmented hand
         cv2.rectangle(viewFrame, (left, top), (right, bottom), (0, 255, 0), 2)
 

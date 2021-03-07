@@ -5,7 +5,7 @@ class idLetter():
 
     sampleCount = 0
     sampleData = {}
-    sampleMax = 30
+    sampleMax = 45
     sleepCount = 0
     sleepMax = 5
 
