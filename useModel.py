@@ -7,26 +7,26 @@ import os
 
 # global variables
 bg = None
+letter = ''
+wordEnd = False
 
-# Choose active camers
+# Choose active camera
 camera = 0
 
+# Locate local file location
 fileLocation = os.path.dirname(os.path.realpath(__file__))
 
+# Open trained ML model and labels
 model = tensorflow.keras.models.load_model(
     fileLocation + '\\final_model.h5')
 TM_DATA = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
 f = open(fileLocation + '\\final_labels.txt', 'r')
 labels = f.read().split('\n')[:-1]
-# Fix this
 
+# Initialize statistics analyser
 stats = idLetter(labels)
-letter = ''
-wordEnd = False
 
-# --------------------------------------------------
-# To find the running average over the background
-# --------------------------------------------------
+# Calculate running average of background image
 
 
 def run_avg(image, aWeight):
@@ -39,11 +39,8 @@ def run_avg(image, aWeight):
     # compute weighted average, accumulate it and update the background
     cv2.accumulateWeighted(image, bg, aWeight)
 
-    # ---------------------------------------------
-    # To segment the region of hand in the image
-    # ---------------------------------------------
 
-
+# Detect segmented contours of hand
 def segment(image, threshold=25):
     global bg
     # find the absolute difference between background and current frame
@@ -65,9 +62,7 @@ def segment(image, threshold=25):
         return (thresholded, segmented)
 
 
-# -----------------
-# MAIN FUNCTION
-# -----------------
+# Main function
 if __name__ == "__main__":
     # initialize weight for running average
     aWeight = 0.5
@@ -138,19 +133,13 @@ if __name__ == "__main__":
                 normalized = (image_array.astype(np.float32)/127.0)-1
                 TM_DATA[0] = normalized
                 PredictionVar = model.predict(TM_DATA)
-                # print(PredictionVar)
-                # print(max(PredictionVar[0]))
-                # print(labels[PredictionVar[0].tolist().index(
-                #     max(PredictionVar[0]))])
+
                 c = stats.addData(labels[PredictionVar[0].tolist().index(
                     max(PredictionVar[0]))], max(PredictionVar[0]))
                 if c is not None:
                     letter = c
                     print("3 most accurate letters", letter)
 
-                # idLetter(max(PredictionVar[0]), labels[PredictionVar[0].tolist().index(
-                #     max(PredictionVar[0]))])
-                #labels[np.where(PredictionVar[0] == max(PredictionVar[0]))]
             else:
                 phrase.endPhrase()
                 wordEnd = True
