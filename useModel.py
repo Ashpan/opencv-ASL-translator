@@ -22,6 +22,7 @@ labels = f.read().split('\n')[:-1]
 
 stats = idLetter(labels)
 letter = ''
+wordEnd = False
 
 # --------------------------------------------------
 # To find the running average over the background
@@ -114,6 +115,7 @@ if __name__ == "__main__":
 
             # check whether hand region is segmented
             if hand is not None:
+                wordEnd = False
                 # if yes, unpack the thresholded image and
                 # segmented region
                 (thresholded, segmented) = hand
@@ -146,6 +148,8 @@ if __name__ == "__main__":
                 # idLetter(max(PredictionVar[0]), labels[PredictionVar[0].tolist().index(
                 #     max(PredictionVar[0]))])
                 #labels[np.where(PredictionVar[0] == max(PredictionVar[0]))]
+            else:
+                wordEnd = True
 
         # draw the segmented hand
         cv2.rectangle(viewFrame, (left, top), (right, bottom), (0, 255, 0), 2)
