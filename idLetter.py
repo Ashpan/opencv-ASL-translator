@@ -1,3 +1,4 @@
+from collections import Counter
 class idLetter():
 
     sampleCount = 0

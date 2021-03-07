@@ -82,6 +82,9 @@ if __name__ == "__main__":
     num_frames = 0
 
     # keep looping, until interrupted
+    
+    phrase = phrase()
+    
     while(True):
         # get the current frame
         (grabbed, frame) = camera.read()
@@ -143,12 +146,13 @@ if __name__ == "__main__":
                     max(PredictionVar[0]))], max(PredictionVar[0]))
                 if c is not None:
                     letter = c
-                    print(letter[2:])
+                    print("3 most accurate letters", letter)
 
                 # idLetter(max(PredictionVar[0]), labels[PredictionVar[0].tolist().index(
                 #     max(PredictionVar[0]))])
                 #labels[np.where(PredictionVar[0] == max(PredictionVar[0]))]
             else:
+                phrase.endPhrase()
                 wordEnd = True
 
         # draw the segmented hand
