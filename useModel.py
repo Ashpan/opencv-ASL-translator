@@ -10,6 +10,7 @@ from phrase import phrase
 bg = None
 letter = ''
 wordEnd = False
+display = ''
 
 # Choose active camera
 camera = 0
@@ -140,13 +141,14 @@ if __name__ == "__main__":
                     letter = c
                     print("3 most accurate letters", letter)
                     sentence.addLetter(letter)
-                    print(sentence.getPhrase())
+                    display = sentence.getPhrase()
 
             else:
                 sentence.endWord()
                 wordEnd = True
                 stats.reset()
-
+        cv2.putText(viewFrame, display, (10, 600),
+                    cv2.FONT_HERSHEY_PLAIN, 2, (0, 255, 0))
         # draw the segmented hand
         cv2.rectangle(viewFrame, (left, top), (right, bottom), (0, 255, 0), 2)
 
@@ -162,6 +164,10 @@ if __name__ == "__main__":
         # if the user pressed "q", then stop looping
         if keypress == ord("q"):
             break
+
+        if keypress == ord("c"):
+            sentence.reset()
+            display = ''
 
 
 # free up memory

@@ -38,6 +38,7 @@ class phrase():
 # return the phrase
     def getPhrase(self):
         return (self.phrase + self.word)
+
     def reset(self):
         self.word = ""
         self.phrase = ""
