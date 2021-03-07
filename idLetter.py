@@ -11,15 +11,13 @@ class idLetter():
 
     def addData(self, label, weight):
         if self.sampleCount >= self.sampleMax:
-            maxVal = 0
-            maxLabel = ''
-            for lab in self.sampleData:
-                if self.sampleData[lab] >= maxVal:
-                    maxVal = self.sampleData[lab]
-                    maxLabel = lab
-                self.sampleData[lab] = 0
+            k = Counter(self.sampleData)
+            high = k.most_common(3)
+            self.sampleData = dict.fromkeys(self.sampleData, 0)
             self.sampleCount = 0
-            return maxLabel
+            for i in range(len(high)):
+                high[i] = (high[i][0][2:], high[i][1])
+            return (high)
         else:
             self.sampleCount += 1
             self.sampleData[label] += weight
