@@ -4,6 +4,7 @@ import numpy as np
 import tensorflow
 from idLetter import idLetter
 import os
+from phrase import phrase
 
 # global variables
 bg = None
@@ -139,6 +140,8 @@ if __name__ == "__main__":
                 if c is not None:
                     letter = c
                     print("3 most accurate letters", letter)
+                    phrase.addLetter(letter)
+                    print(phrase.getPhrase)
 
             else:
                 phrase.endPhrase()
