@@ -1,4 +1,6 @@
 from collections import Counter
+
+
 class idLetter():
 
     sampleCount = 0
@@ -19,7 +21,10 @@ class idLetter():
             self.sampleData = dict.fromkeys(self.sampleData, 0)
             self.sampleCount = 0
             for i in range(len(high)):
-                high[i] = (high[i][0][2:], high[i][1])
+                if(len(high[i][0]) <= 3):
+                    high[i] = (high[i][0][2:], high[i][1])
+                else:
+                    high[i] = (high[i][0][3:], high[i][1])
             return (high)
         elif self.sleepCount < self.sleepMax:
             self.sleepCount += 1
@@ -27,3 +32,8 @@ class idLetter():
             self.sampleCount += 1
             self.sampleData[label] += weight
             return None
+
+    def reset(self):
+        self.sleepCount = 0
+        self.sampleCount = 0
+        self.sampleData = dict.fromkeys(self.sampleData, 0)

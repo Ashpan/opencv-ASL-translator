@@ -23,7 +23,6 @@ model = tensorflow.keras.models.load_model(
 TM_DATA = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
 f = open(fileLocation + '\\final_labels.txt', 'r')
 labels = f.read().split('\n')[:-1]
-
 # Initialize statistics analyser
 stats = idLetter(labels)
 
@@ -78,9 +77,9 @@ if __name__ == "__main__":
     num_frames = 0
 
     # keep looping, until interrupted
-    
-    phrase = phrase()
-    
+
+    sentence = phrase()
+
     while(True):
         # get the current frame
         (grabbed, frame) = camera.read()
@@ -140,12 +139,13 @@ if __name__ == "__main__":
                 if c is not None:
                     letter = c
                     print("3 most accurate letters", letter)
-                    phrase.addLetter(letter)
-                    print(phrase.getPhrase)
+                    sentence.addLetter(letter)
+                    print(sentence.getPhrase())
 
             else:
-                phrase.endPhrase()
+                sentence.endWord()
                 wordEnd = True
+                stats.reset()
 
         # draw the segmented hand
         cv2.rectangle(viewFrame, (left, top), (right, bottom), (0, 255, 0), 2)
